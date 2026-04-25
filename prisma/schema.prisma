@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  accountType String @default("HOME") // "HOME" or "STORE"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  categories Category[]
+  products   Product[]
+  movements  Movement[]
+  alerts     Alert[]
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String
+  color     String    @default("#6366f1")
+  icon      String    @default("📦")
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@unique([name, userId])
+}
+
+model Product {
+  id              Int       @id @default(autoincrement())
+  name            String
+  sku             String?
+  description     String?
+  categoryId      Int
+  category        Category  @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  userId          Int
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quantity        Int       @default(0)
+  minQuantity     Int       @default(10)
+  maxQuantity     Int       @default(1000)
+  unit            String    @default("un")
+  costPrice       Float     @default(0)
+  salePrice       Float     @default(0)
+  expirationDate  DateTime?
+  batchNumber     String?
+  supplier        String?
+  location        String?
+  imageUrl        String?
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  movements       Movement[]
+  alerts          Alert[]
+
+  @@unique([sku, userId])
+}
+
+model Movement {
+  id          Int       @id @default(autoincrement())
+  productId   Int
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId      Int
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        String    // "IN" | "OUT" | "ADJUSTMENT"
+  quantity    Int
+  reason      String?
+  reference   String?
+  performedBy String    @default("Sistema")
+  createdAt   DateTime  @default(now())
+}
+
+model Alert {
+  id          Int       @id @default(autoincrement())
+  productId   Int
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId      Int
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        String    // "LOW_STOCK" | "EXPIRING" | "EXPIRED" | "OVERSTOCK"
+  message     String
+  severity    String    @default("warning") // "info" | "warning" | "critical"
+  isRead      Boolean   @default(false)
+  isDismissed Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Setting {
+  id    Int    @id @default(autoincrement())
+  key   String @unique
+  value String
+}

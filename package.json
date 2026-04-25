@@ -1,0 +1,40 @@
+{
+  "name": "inventory-manager",
+  "version": "1.0.0",
+  "description": "Gerenciador de Inventário em Tempo Real com WebSockets",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "concurrently \"npx tsx watch src/server.ts\" \"npx live-server public --port=3001 --no-browser --quiet\"",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:seed": "npx tsx src/seed.ts",
+    "db:studio": "prisma studio",
+    "setup": "npm install && npx prisma generate && npx prisma db push && npx tsx src/seed.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.6.0",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.5",
+    "express": "^4.21.0",
+    "express-rate-limit": "^8.4.1",
+    "jsonwebtoken": "^9.0.3",
+    "node-cron": "^3.0.3",
+    "socket.io": "^4.8.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^22.0.0",
+    "@types/node-cron": "^3.0.11",
+    "concurrently": "^9.0.0",
+    "live-server": "^1.2.2",
+    "prisma": "^6.6.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}
